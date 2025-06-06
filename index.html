@@ -1,1 +1,1722 @@
 
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podróż Renatki po Sri Lance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <style>
+        :root {
+            --primary-gold: #D4AF37;
+            --secondary-orange: #FF6B35;
+            --deep-purple: #4A148C;
+            --ocean-blue: #0277BD;
+            --sand-beige: #FFF3E0;
+            --dark-bg: #141414;
+            --text-light: #FAFAFA;
+            --text-dark: #212121;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+        
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            width: 100%;
+            padding: 20px 50px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(20, 20, 20, 0.8);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        nav.scrolled {
+            padding: 15px 50px;
+            background: rgba(20, 20, 20, 0.95);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary-gold);
+            letter-spacing: -1px;
+            flex-shrink: 0;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-gold);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(rgba(20, 20, 20, 0.5), rgba(20, 20, 20, 0.5)), 
+                        url('https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g70e744eb98e231268baab9d6ef631e97efc330d99af61e317a2bdaea38b10e7c6c21a1c72674386f32ed4be244002b429768caed4c0888cf74fd5bbd9eeb13f6_1280.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            position: relative;
+            padding: 0 20px;
+            max-width: 900px;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .hero-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+            color: var(--primary-gold);
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        .hero-title span {
+            color: var(--primary-gold);
+        }
+
+        .hero-description {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.7s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-cta {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.9s forwards;
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 100px 30px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            color: var(--primary-gold);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--primary-gold);
+        }
+
+        /* Journey Timeline */
+        .journey-section {
+            background: linear-gradient(rgba(20, 20, 20, 0.8), rgba(20, 20, 20, 0.8)), 
+                        url('https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g70e744eb98e231268baab9d6ef631e97efc330d99af61e317a2bdaea38b10e7c6c21a1c72674386f32ed4be244002b429768caed4c0888cf74fd5bbd9eeb13f6_1280.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--primary-gold);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 80px;
+            width: 100%;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: auto;
+            text-align: left;
+            padding-left: 40px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-right: auto;
+            text-align: right;
+            padding-right: 40px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-gold);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 0 5px rgba(212, 175, 55, 0.2);
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+
+        .timeline-content {
+            position: relative;
+            width: 45%;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary-gold);
+        }
+
+        .timeline-date {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--primary-gold);
+            margin-bottom: 10px;
+        }
+
+        .timeline-location {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .timeline-activities {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        /* Interactive Map */
+        .map-section {
+            background-color: var(--dark-bg);
+            position: relative;
+        }
+
+        .map-container {
+            position: relative;
+            height: 700px;
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+        }
+
+        #interactiveMap {
+            width: 100%;
+            height: 100%;
+            border-radius: 13px;
+        }
+
+        /* Custom Leaflet Popup Styling */
+        .leaflet-popup-content-wrapper {
+            background: rgba(20, 20, 20, 0.95) !important;
+            border: 2px solid var(--primary-gold) !important;
+            border-radius: 10px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .leaflet-popup-content {
+            color: var(--text-light) !important;
+            margin: 15px 20px !important;
+            line-height: 1.5 !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        .leaflet-popup-tip {
+            background: rgba(20, 20, 20, 0.95) !important;
+            border: 2px solid var(--primary-gold) !important;
+        }
+
+        .popup-title {
+            color: var(--primary-gold);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .popup-date {
+            color: var(--secondary-orange);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .popup-description {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Custom Map Markers */
+        .custom-marker {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .custom-marker:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .marker-start { background: var(--secondary-orange); }
+        .marker-main { background: var(--primary-gold); }
+        .marker-special { background: var(--deep-purple); }
+
+        /* Map Legend */
+        .map-legend {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px 30px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .map-legend h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-gold);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .legend-marker {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .legend-marker.start { background: var(--secondary-orange); }
+        .legend-marker.main { background: var(--primary-gold); }
+        .legend-marker.special { background: var(--deep-purple); }
+
+        .legend-line {
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-gold), var(--secondary-orange));
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Travel Tips Section */
+        .tips-section {
+            background: linear-gradient(rgba(20, 20, 20, 0.8), rgba(20, 20, 20, 0.8)), 
+                        url('https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g9e9d99241177cfbbef368c493969fe9b7ad1bbad91f801b953af85d7fd3076ace0f518cc9655054d7ebce9f802f511f9df51818e87a2ef21f76e55e157fce85f_1280.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .tips-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .tip-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px 25px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tip-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary-gold);
+        }
+
+        .tip-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-gold), var(--secondary-orange));
+        }
+
+        .tip-icon {
+            font-size: 2.5rem;
+            color: var(--primary-gold);
+            margin-bottom: 20px;
+        }
+
+        .tip-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        .tip-content {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .tip-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .tip-list li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .tip-list li::before {
+            content: '•';
+            color: var(--primary-gold);
+            position: absolute;
+            left: 0;
+            font-size: 1.2rem;
+        }
+
+        /* Gallery Section */
+        .gallery-section {
+            background-color: var(--dark-bg);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            height: 350px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            z-index: 5;
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .gallery-item:hover .gallery-img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 25px;
+            transition: all 0.4s ease;
+        }
+
+        .gallery-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: var(--primary-gold);
+        }
+
+        .gallery-description {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            padding: 20px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .lightbox-content {
+            margin: auto;
+            display: block;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .lightbox-caption {
+            margin: 20px auto;
+            display: block;
+            width: 90%;
+            max-width: 1200px;
+            text-align: center;
+            color: var(--text-light);
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .lightbox-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--primary-gold);
+            margin-bottom: 10px;
+        }
+
+        .lightbox-description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: var(--text-light);
+            font-size: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            z-index: 2001;
+            background: rgba(20, 20, 20, 0.8);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--primary-gold);
+        }
+
+        .close-lightbox:hover {
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+            transform: scale(1.1);
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(20, 20, 20, 0.8);
+            color: var(--text-light);
+            border: 2px solid var(--primary-gold);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            z-index: 2001;
+        }
+
+        .lightbox-nav:hover {
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .lightbox-prev {
+            left: 30px;
+        }
+
+        .lightbox-next {
+            right: 30px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 30px 40px;
+            background: var(--dark-bg);
+            text-align: center;
+            position: relative;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .footer-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary-gold);
+        }
+
+        .footer-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .social-link {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--primary-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-gold);
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Map Info Control Custom Styling */
+        .map-info {
+            padding: 10px 15px;
+            background: rgba(20, 20, 20, 0.9);
+            border: 2px solid #D4AF37;
+            border-radius: 10px;
+            color: #FAFAFA;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .map-info h4 {
+            margin: 0 0 5px 0;
+            color: #D4AF37;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .map-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            section {
+                padding: 80px 20px;
+            }
+            
+            .timeline::before {
+                left: 40px;
+            }
+            
+            .timeline-item:nth-child(odd) .timeline-content,
+            .timeline-item:nth-child(even) .timeline-content {
+                width: calc(100% - 60px);
+                margin-left: 60px;
+                padding-left: 20px;
+                padding-right: 20px;
+                text-align: left;
+            }
+            
+            .timeline-dot {
+                left: 40px;
+            }
+            
+            .map-container {
+                height: 500px;
+            }
+
+            .tips-container {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+
+            .legend-items {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 20px;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .nav-links {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px 0;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: absolute;
+                right: 20px;
+                top: 18px;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .timeline-content {
+                padding: 20px;
+            }
+            
+            .tip-card {
+                padding: 25px 20px;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+
+            .map-container {
+                height: 400px;
+            }
+
+            .map-legend {
+                padding: 20px;
+            }
+
+            .legend-items {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .lightbox-content {
+                width: 95%;
+                max-height: 70vh;
+            }
+
+            .close-lightbox {
+                top: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+                font-size: 30px;
+            }
+
+            .lightbox-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .lightbox-prev {
+                left: 20px;
+            }
+
+            .lightbox-next {
+                right: 20px;
+            }
+        }
+
+        /* Animation Classes */
+        .animate {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .animate.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="logo">श्रीलंका यात्रा</a>
+            <button class="menu-toggle" id="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#home" class="nav-link">Start</a></li>
+                <li><a href="#journey" class="nav-link">Podróż</a></li>
+                <li><a href="#map" class="nav-link">Mapa</a></li>
+                <li><a href="#tips" class="nav-link">Porady</a></li>
+                <li><a href="#gallery" class="nav-link">Galeria</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-subtitle">नमस्ते • வணக்கம் • Ayubowan</div>
+            <h1 class="hero-title">Podróż <span>Renatki</span><br>po Sri Lance</h1>
+            <p class="hero-description">18 dni pełnych przygód, kultury i niezapomnianych wspomnień</p>
+            <a href="#journey" class="hero-cta">Odkryj podróż</a>
+        </div>
+    </section>
+
+    <!-- Journey Timeline -->
+    <section class="journey-section" id="journey">
+        <h2 class="section-title animate">Przebieg Podróży</h2>
+        
+        <div class="timeline">
+            <div class="timeline-item animate">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">6-8 Czerwca</div>
+                    <div class="timeline-location">Chennai, Indie</div>
+                    <div class="timeline-activities">
+                        <strong>Początek przygody w Chennai</strong><br>
+                        • Zwiedzanie Marina Beach - najdłuższej plaży miejskiej na świecie<br>
+                        • Kapaleeshwarar Temple - 800-letnia świątynia dedykowana Śiwie<br>
+                        • Fort St. George - pierwsza brytyjska twierdza w Indiach<br>
+                        <strong>Wycieczka do Pondicherry</strong><br>
+                        • Francuska Dzielnica z kolonialną architekturą<br>
+                        • Aurobindo Ashram - centrum duchowości i medytacji<br>
+                        • Paradise Beach i nadbrzeżna promenada
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item animate">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">9-10 Czerwca</div>
+                    <div class="timeline-location">Sigiriya</div>
+                    <div class="timeline-activities">
+                        <strong>Lwia Skała o wschodzie słońca</strong><br>
+                        • Wspinaczka na Sigiriya Rock - 1200 schodów na szczyt<br>
+                        • Freski Niebiańskich Dziewic z V wieku<br>
+                        • Lustrzana Ściana z poetyckimi grafficitti<br>
+                        <strong>Polonnaruwa - starożytna stolica</strong><br>
+                        • Gal Vihara - monumentalne posągi Buddy<br>
+                        • Rankoth Vehera - największa stupa w mieście<br>
+                        <strong>Świątynia Dambulla</strong><br>
+                        • Złota Świątynia z 5 jaskiniami<br>
+                        • 150 posągów Buddy i boskie malowidła
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item animate">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">11-12 Czerwca</div>
+                    <div class="timeline-location">Kandy</div>
+                    <div class="timeline-activities">
+                        <strong>Świątynia Zęba (Sri Dalada Maligawa)</strong><br>
+                        • Najświętsza buddyjska relikwia - ząb Buddy<br>
+                        • Ceremonia Puja o godzinie 18:30<br>
+                        • Muzeum Światowej Buddyjskiej Sztuki<br>
+                        <strong>Kurs gotowania w lokalnej rodzinie</strong><br>
+                        • Przygotowanie Rice & Curry od podstaw<br>
+                        • Wizyta na targu przypraw Kandy<br>
+                        • Degustacja Ceylon Tea na plantacji<br>
+                        <strong>Odkrywanie kultury</strong><br>
+                        • Pokaz tradycyjnych tańców Kandyan<br>
+                        • Spacer wokół jeziora Kandy<br>
+                        • Ogród Botaniczny Peradeniya
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item animate">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">13-15 Czerwca</div>
+                    <div class="timeline-location">Colombo - Ślub!</div>
+                    <div class="timeline-activities">
+                        <strong>Tradycyjny ślub sri lankijski</strong><br>
+                        • Ceremonia Mendhi - henną malowanie rąk<br>
+                        • Sangeet - wieczór muzyki i tańca<br>
+                        • Poruwa Ceremony - błogosławieństwo na platformie<br>
+                        • Subha Muhurtham - główna ceremonia zaślubin<br>
+                        <strong>Zwiedzanie Colombo</strong><br>
+                        • Świątynia Gangaramaya - mix architektur<br>
+                        • Pettah Bazaar - kolorowy targ lokalny<br>
+                        • Galle Face Green - nadbrzeżna promenada<br>
+                        • Red Mosque - neomaurytańska architektura<br>
+                        • Independence Memorial Hall
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item animate">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">16-17 Czerwca</div>
+                    <div class="timeline-location">Galle & Mirissa</div>
+                    <div class="timeline-activities">
+                        <strong>Fort Galle - perła kolonialna</strong><br>
+                        • Holenderski Fort z XVII wieku - UNESCO<br>
+                        • Spacer po bastionach nad oceanem<br>
+                        • Dutch Reformed Church i Muzeum Morskie<br>
+                        • Lighthouse Galle - najstarsza latarnia na Sri Lance<br>
+                        <strong>Plaże Mirissy</strong><br>
+                        • Coconut Tree Hill - ikoniczne palmy<br>
+                        • Whale watching - wieloryby błękitne i płetwale<br>
+                        • Secret Beach - ukryta zatoka<br>
+                        • Zachód słońca z Parrot Rock<br>
+                        • Ayurvedyjski masaż na plaży
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item animate">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">18 Czerwca</div>
+                    <div class="timeline-location">Yala & Ella</div>
+                    <div class="timeline-activities">
+                        <strong>Safari o świcie w Parku Yala</strong><br>
+                        • Poszukiwanie lampartów cejlońskich<br>
+                        • Słonie azjatyckie w naturalnym środowisku<br>
+                        • Obserwacja 215 gatunków ptaków<br>
+                        • Niedźwiedzie leniuchowe i jelenie sambary<br>
+                        <strong>Ella - górska perełka</strong><br>
+                        • Little Adam's Peak - łatwa wędrówka z widokami<br>
+                        • Nine Arch Bridge - ikoniczny most kolejowy<br>
+                        • Ella Rock - szczyt o wysokości 1041m<br>
+                        • Ravana Falls - 25-metrowy wodospad<br>
+                        • Degustacja herbaty w Tea Factory
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item animate">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">19-20 Czerwca</div>
+                    <div class="timeline-location">Nuwara Eliya</div>
+                    <div class="timeline-activities">
+                        <strong>Malownicza podróż pociągiem</strong><br>
+                        • Trasa Ella-Nuwara Eliya - najpiękniejsza na świecie<br>
+                        • Przejazd przez plantacje herbaty i wodospady<br>
+                        • Viadukt Nine Arch z poziomu pociągu<br>
+                        <strong>"Mała Anglia" Sri Lanki</strong><br>
+                        • Gregory Lake - romantyczne spacery łodzią<br>
+                        • Hakgala Botanical Garden - róże i orchidee<br>
+                        • Pedro Tea Estate - fabryka herbaty Ceylon<br>
+                        • Victoria Park - angielski park krajobrazowy<br>
+                        • Golf Course Nuwara Eliya - najstarszy na Sri Lance<br>
+                        • Strawberry Fields - plantacje truskawek
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item animate">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">21-23 Czerwca</div>
+                    <div class="timeline-location">Negombo & Powrót</div>
+                    <div class="timeline-activities">
+                        <strong>Negombo - rybacka stolica</strong><br>
+                        • Fish Market - największy targ rybny na wyspie<br>
+                        • Wyprawy łodziami outrigger na ocean<br>
+                        • St. Mary's Church - neogotycka katedra<br>
+                        • Dutch Canal - rejs kanałami z czasów kolonialnych<br>
+                        <strong>Ostatnie chwile na Sri Lance</strong><br>
+                        • Angunakolapelessa Beach - spokojne plaże<br>
+                        • Zakupy pamiątek: herbata, przyprawy, batik<br>
+                        • Bandaranaike Airport - pożegnanie z wyspą<br>
+                        • Lot powrotny z niezapomnianymi wspomnieniami
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Map -->
+    <section class="map-section" id="map">
+        <h2 class="section-title animate">Mapa Podróży</h2>
+        
+        <div class="map-container animate" id="mapContainer">
+            <div id="interactiveMap"></div>
+        </div>
+        
+        <!-- Map Legend -->
+        <div class="map-legend animate">
+            <h3>Legenda Podróży</h3>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-marker start"></div>
+                    <span>Punkt startowy (Chennai)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-marker main"></div>
+                    <span>Główne destynacje</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-marker special"></div>
+                    <span>Ceremonia ślubna</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-line"></div>
+                    <span>Trasa podróży</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Travel Tips Section -->
+    <section class="tips-section" id="tips">
+        <h2 class="section-title animate">Praktyczne Porady</h2>
+        
+        <div class="tips-container">
+            <div class="tip-card animate">
+                <div class="tip-icon"><i class="fas fa-passport"></i></div>
+                <h3 class="tip-title">Dokumenty & Wiza</h3>
+                <div class="tip-content">
+                    Electronic Travel Authorization (ETA) online przed podróżą
+                    <ul class="tip-list">
+                        <li>Koszt: 50 USD na 30 dni</li>
+                        <li>Paszport ważny min. 6 miesięcy</li>
+                        <li>Bilet powrotny obowiązkowy</li>
+                        <li>Potwierdzenie zakwaterowania</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tip-card animate">
+                <div class="tip-icon"><i class="fas fa-money-bill"></i></div>
+                <h3 class="tip-title">Waluta & Płatności</h3>
+                <div class="tip-content">
+                    Rupia Sri Lankijska (LKR) - główna waluta
+                    <ul class="tip-list">
+                        <li>1 USD ≈ 320 LKR (2024)</li>
+                        <li>Karty akceptowane w większych miejscach</li>
+                        <li>Gotówka w małych sklepach i tuk-tukach</li>
+                        <li>Bankomaty dostępne w miastach</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tip-card animate">
+                <div class="tip-icon"><i class="fas fa-car"></i></div>
+                <h3 class="tip-title">Transport</h3>
+                <div class="tip-content">
+                    Różnorodne opcje przemieszczania się
+                    <ul class="tip-list">
+                        <li>Tuk-tuk - idealne na krótkie trasy</li>
+                        <li>Prywatny kierowca - wygoda na dłuższe dystanse</li>
+                        <li>Pociągi - malownicze trasy górskie</li>
+                        <li>Autobus - najtańsza opcja</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tip-card animate">
+                <div class="tip-icon"><i class="fas fa-utensils"></i></div>
+                <h3 class="tip-title">Jedzenie</h3>
+                <div class="tip-content">
+                    Kuchnia Sri Lankijska - pikantna i aromatyczna
+                    <ul class="tip-list">
+                        <li>Rice & Curry - podstawowe danie</li>
+                        <li>Kottu Roti - uliczne jedzenie</li>
+                        <li>Hoppers - śniadaniowe placki</li>
+                        <li>Ceylon Tea - słynna herbata</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tip-card animate">
+                <div class="tip-icon"><i class="fas fa-heart"></i></div>
+                <h3 class="tip-title">Zdrowie</h3>
+                <div class="tip-content">
+                    Przygotowania zdrowotne przed podróżą
+                    <ul class="tip-list">
+                        <li>Szczepienie przeciw żółtaczce typu A i B</li>
+                        <li>Profilaktyka przeciw malarii (regiony)</li>
+                        <li>Ubezpieczenie podróżne obowiązkowe</li>
+                        <li>Pić tylko butelkowaną wodę</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tip-card animate">
+                <div class="tip-icon"><i class="fas fa-praying-hands"></i></div>
+                <h3 class="tip-title">Kultura</h3>
+                <div class="tip-content">
+                    Szacunek dla lokalnych tradycji
+                    <ul class="tip-list">
+                        <li>Zdejmij buty przed wejściem do świątyń</li>
+                        <li>Przykryj ramiona i nogi w miejscach kultu</li>
+                        <li>Nie fotografuj posągów Buddy przodem</li>
+                        <li>Lewa ręka uważana za nieczystą</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tip-card animate">
+                <div class="tip-icon"><i class="fas fa-calendar-alt"></i></div>
+                <h3 class="tip-title">Najlepszy Czas</h3>
+                <div class="tip-content">
+                    Klimat tropikalny z porami monsunowymi
+                    <ul class="tip-list">
+                        <li>Grudzień-Marzec: najlepszy czas</li>
+                        <li>Kwiecień-Maj: gorący sezon</li>
+                        <li>Czerwiec-Listopad: monsun</li>
+                        <li>Wybrzeże zachodnie vs wschodnie</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tip-card animate">
+                <div class="tip-icon"><i class="fas fa-luggage-cart"></i></div>
+                <h3 class="tip-title">Pakowanie</h3>
+                <div class="tip-content">
+                    Niezbędne rzeczy do zabrania
+                    <ul class="tip-list">
+                        <li>Lekka odzież z długimi rękawami</li>
+                        <li>Krem z filtrem UV 50+</li>
+                        <li>Repelent przeciw komarom</li>
+                        <li>Leki na problemy żołądkowe</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section" id="gallery">
+        <h2 class="section-title animate">Galeria Wspomnień</h2>
+        
+        <div class="gallery-grid">
+            <div class="gallery-item animate" 
+                 data-src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g70e744eb98e231268baab9d6ef631e97efc330d99af61e317a2bdaea38b10e7c6c21a1c72674386f32ed4be244002b429768caed4c0888cf74fd5bbd9eeb13f6_1280.jpg"
+                 data-title="Sigiriya Rock"
+                 data-description="Wschód słońca z Lwiej Skały - magiczny moment na wysokości 200 metrów nad ziemią. Starożytna forteca króla Kassapy z V wieku.">
+                <img src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g70e744eb98e231268baab9d6ef631e97efc330d99af61e317a2bdaea38b10e7c6c21a1c72674386f32ed4be244002b429768caed4c0888cf74fd5bbd9eeb13f6_1280.jpg" alt="Sigiriya Rock" class="gallery-img">
+                <div class="gallery-overlay">
+                    <h3 class="gallery-title">Sigiriya Rock</h3>
+                    <p class="gallery-description">Wschód słońca z Lwiej Skały</p>
+                </div>
+            </div>
+
+            <div class="gallery-item animate"
+                 data-src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g5251e0ce6d682f955db3809b19074158641266460d2c4f37cf25d08b143b99a529229904273492667e36eab154cb16a6c68345d9e6dadf9dca515d29ddd1707c_1280.jpg"
+                 data-title="Świątynia Zęba"
+                 data-description="Sri Dalada Maligawa w Kandy - najświętsza buddyjska świątynia Sri Lanki, gdzie przechowywany jest ząb Buddy.">
+                <img src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g5251e0ce6d682f955db3809b19074158641266460d2c4f37cf25d08b143b99a529229904273492667e36eab154cb16a6c68345d9e6dadf9dca515d29ddd1707c_1280.jpg" alt="Świątynia Zęba" class="gallery-img">
+                <div class="gallery-overlay">
+                    <h3 class="gallery-title">Świątynia Zęba</h3>
+                    <p class="gallery-description">Święte miejsce w Kandy</p>
+                </div>
+            </div>
+
+            <div class="gallery-item animate"
+                 data-src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g9e9d99241177cfbbef368c493969fe9b7ad1bbad91f801b953af85d7fd3076ace0f518cc9655054d7ebce9f802f511f9df51818e87a2ef21f76e55e157fce85f_1280.jpg"
+                 data-title="Plaże Mirissy"
+                 data-description="Perła południowego wybrzeża Sri Lanki. Złote piaski, turkusowa woda i spektakularne zachody słońca nad Oceanem Indyjskim.">
+                <img src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g9e9d99241177cfbbef368c493969fe9b7ad1bbad91f801b953af85d7fd3076ace0f518cc9655054d7ebce9f802f511f9df51818e87a2ef21f76e55e157fce85f_1280.jpg" alt="Plaże Mirissy" class="gallery-img">
+                <div class="gallery-overlay">
+                    <h3 class="gallery-title">Plaże Mirissy</h3>
+                    <p class="gallery-description">Złote piaski i turkusowa woda</p>
+                </div>
+            </div>
+
+            <div class="gallery-item animate"
+                 data-src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g8ae9b1b1710bf0c9732cd7a901777931a4ec4918aa88bcb23a3b604bcd96282d1af63eb09634ce21edbd7a5920a2130393c01b65373dfa375485b9ad8871a352_1280.jpg"
+                 data-title="Most Dziewięciu Łuków"
+                 data-description="Ikoniczny most kolejowy w Ella - jeden z najpiękniejszych mostów na świecie, otoczony bujną tropikalną roślinnością.">
+                <img src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g8ae9b1b1710bf0c9732cd7a901777931a4ec4918aa88bcb23a3b604bcd96282d1af63eb09634ce21edbd7a5920a2130393c01b65373dfa375485b9ad8871a352_1280.jpg" alt="Most Dziewięciu Łuków" class="gallery-img">
+                <div class="gallery-overlay">
+                    <h3 class="gallery-title">Most Dziewięciu Łuków</h3>
+                    <p class="gallery-description">Ikona kolejnictwa Sri Lanki</p>
+                </div>
+            </div>
+
+            <div class="gallery-item animate"
+                 data-src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g966813bd29f1cf8502c5a48b08e8aca9ea1d9316b9a311abbb293d125cc9379a7026893d2766f60d003e9be2e9b29748a6c03f5509054fa5cc481ac240630db3_1280.jpg"
+                 data-title="Ceremonia Ślubna"
+                 data-description="Tradycyjny ślub sri lankijski z ceremonią Poruwa. Kolorowe sari, kwiaty lotosu i starożytne rytuały błogosławieństwa.">
+                <img src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g966813bd29f1cf8502c5a48b08e8aca9ea1d9316b9a311abbb293d125cc9379a7026893d2766f60d003e9be2e9b29748a6c03f5509054fa5cc481ac240630db3_1280.jpg" alt="Tradycyjny Taniec" class="gallery-img">
+                <div class="gallery-overlay">
+                    <h3 class="gallery-title">Ceremonia Ślubna</h3>
+                    <p class="gallery-description">Tradycyjne święto miłości</p>
+                </div>
+            </div>
+
+            <div class="gallery-item animate"
+                 data-src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g70e744eb98e231268baab9d6ef631e97efc330d99af61e317a2bdaea38b10e7c6c21a1c72674386f32ed4be244002b429768caed4c0888cf74fd5bbd9eeb13f6_1280.jpg"
+                 data-title="Safari w Yala"
+                 data-description="Park Narodowy Yala - spotkanie z dzikimi słoniami, lampartami i setkami gatunków ptaków w ich naturalnym środowisku.">
+                <img src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g70e744eb98e231268baab9d6ef631e97efc330d99af61e317a2bdaea38b10e7c6c21a1c72674386f32ed4be244002b429768caed4c0888cf74fd5bbd9eeb13f6_1280.jpg" alt="Safari w Yala" class="gallery-img">
+                <div class="gallery-overlay">
+                    <h3 class="gallery-title">Safari w Yala</h3>
+                    <p class="gallery-description">Spotkanie z dziką przyrodą</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <span class="close-lightbox" id="closeLightbox">×</span>
+        <div class="lightbox-nav lightbox-prev" id="lightboxPrev">❮</div>
+        <div class="lightbox-nav lightbox-next" id="lightboxNext">❯</div>
+        <img class="lightbox-content" id="lightboxImg">
+        <div id="lightboxCaption" class="lightbox-caption">
+            <div class="lightbox-title" id="lightboxTitle"></div>
+            <div class="lightbox-description" id="lightboxDescription"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <h3 class="footer-title">Dziękuję za wspólną podróż</h3>
+            <p class="footer-text">18 dni, które pozostaną w pamięci na zawsze</p>
+            
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script>
+        // Gallery items and lightbox variables
+        let galleryItems = [];
+        let currentImageIndex = 0;
+        let map;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize gallery items
+            galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
+            
+            // Immediate activation of all animation elements
+            setTimeout(function() {
+                document.querySelectorAll('.animate').forEach(el => {
+                    el.classList.add('active');
+                });
+            }, 100);
+
+            // Initialize lightbox functionality
+            initializeLightbox();
+            
+            // Initialize interactive map
+            initializeMap();
+        });
+
+        function initializeMap() {
+            // Initialize the map centered on Sri Lanka
+            map = L.map('interactiveMap').setView([7.8731, 80.7718], 7);
+
+            // Add OpenStreetMap tiles with custom styling
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 18,
+            }).addTo(map);
+
+            // Journey data with coordinates and details
+            const journeyData = [
+                {
+                    name: 'Chennai',
+                    coords: [13.0827, 80.2707],
+                    date: '6-8 Czerwca',
+                    description: 'Początek przygody w Chennai - Marina Beach, Kapaleeshwarar Temple, wycieczka do Pondicherry',
+                    type: 'start'
+                },
+                {
+                    name: 'Sigiriya',
+                    coords: [7.9568, 80.7598],
+                    date: '9-10 Czerwca', 
+                    description: 'Wschód słońca z Lwiej Skały, Polonnaruwa - starożytna stolica, Świątynia Dambulla',
+                    type: 'main'
+                },
+                {
+                    name: 'Kandy',
+                    coords: [7.2906, 80.6337],
+                    date: '11-12 Czerwca',
+                    description: 'Świątynia Zęba, kurs gotowania, tradycyjne tańce Kandyan, Ogród Botaniczny Peradeniya',
+                    type: 'main'
+                },
+                {
+                    name: 'Colombo',
+                    coords: [6.9271, 79.8612],
+                    date: '13-15 Czerwca',
+                    description: 'Tradycyjny ślub sri lankijski! Ceremonię Poruwa, zwiedzanie Gangaramaya, Pettah Bazaar',
+                    type: 'special'
+                },
+                {
+                    name: 'Galle',
+                    coords: [6.0329, 80.2168],
+                    date: '16-17 Czerwca',
+                    description: 'Fort Galle - UNESCO, Dutch Reformed Church, Lighthouse Galle - najstarsza latarnia na Sri Lance',
+                    type: 'main'
+                },
+                {
+                    name: 'Mirissa',
+                    coords: [5.9487, 80.4585],
+                    date: '16-17 Czerwca',
+                    description: 'Coconut Tree Hill, whale watching - wieloryby błękitne, Secret Beach, zachody słońca',
+                    type: 'main'
+                },
+                {
+                    name: 'Yala',
+                    coords: [6.3724, 81.5206],
+                    date: '18 Czerwca',
+                    description: 'Safari o świcie - lamparty cejlońskie, słonie azjatyckie, 215 gatunków ptaków',
+                    type: 'main'
+                },
+                {
+                    name: 'Ella',
+                    coords: [6.8667, 81.0461],
+                    date: '18 Czerwca',
+                    description: 'Little Adams Peak, Nine Arch Bridge, Ella Rock, Ravana Falls, degustacja herbaty',
+                    type: 'main'
+                },
+                {
+                    name: 'Nuwara Eliya',
+                    coords: [6.9497, 80.7891],
+                    date: '19-20 Czerwca',
+                    description: 'Malownicza podróż pociągiem, Gregory Lake, Hakgala Botanical Garden, Pedro Tea Estate',
+                    type: 'main'
+                },
+                {
+                    name: 'Negombo',
+                    coords: [7.2083, 79.8358],
+                    date: '21-23 Czerwca',
+                    description: 'Fish Market, wyprawy łodziami outrigger, St. Marys Church, Dutch Canal, pożegnanie z wyspą',
+                    type: 'main'
+                }
+            ];
+
+            // Create custom icons for different marker types
+            function createCustomIcon(type) {
+                let color, symbol;
+                switch(type) {
+                    case 'start':
+                        color = '#FF6B35';
+                        symbol = '✈';
+                        break;
+                    case 'special':
+                        color = '#4A148C';
+                        symbol = '💒';
+                        break;
+                    default:
+                        color = '#D4AF37';
+                        symbol = '📍';
+                }
+
+                return L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div class="custom-marker marker-${type}">${symbol}</div>`,
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15],
+                    popupAnchor: [0, -15]
+                });
+            }
+
+            // Add markers to the map
+            const markers = [];
+            journeyData.forEach((location, index) => {
+                const marker = L.marker(location.coords, {
+                    icon: createCustomIcon(location.type)
+                }).addTo(map);
+
+                const popupContent = `
+                    <div class="popup-title">${location.name}</div>
+                    <div class="popup-date">${location.date}</div>
+                    <div class="popup-description">${location.description}</div>
+                `;
+
+                marker.bindPopup(popupContent, {
+                    maxWidth: 300,
+                    className: 'custom-popup'
+                });
+
+                // Add smooth popup animations
+                marker.on('mouseover', function(e) {
+                    this.openPopup();
+                });
+
+                markers.push(marker);
+            });
+
+            // Create route line connecting the destinations
+            const routeCoords = journeyData.slice(1).map(location => location.coords); // Skip Chennai
+            const routeLine = L.polyline(routeCoords, {
+                color: '#D4AF37',
+                weight: 4,
+                opacity: 0.8,
+                dashArray: '10, 5',
+                lineJoin: 'round'
+            }).addTo(map);
+
+            // Add pulsing animation to route
+            let opacity = 0.8;
+            let direction = -1;
+            setInterval(() => {
+                opacity += direction * 0.02;
+                if (opacity <= 0.3 || opacity >= 0.8) {
+                    direction *= -1;
+                }
+                routeLine.setStyle({ opacity: opacity });
+            }, 50);
+
+            // Fit map to show all markers
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.1));
+
+            // Add custom map controls
+            const info = L.control();
+            info.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'map-info');
+                this.update();
+                return this._div;
+            };
+
+            info.update = function (props) {
+                this._div.innerHTML = '<h4>🌴 Podróż po Sri Lance</h4>' +
+                    '<p>Kliknij markery aby zobaczyć szczegóły</p>';
+            };
+
+            info.addTo(map);
+        }
+
+        function initializeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightboxImg');
+            const lightboxTitle = document.getElementById('lightboxTitle');
+            const lightboxDescription = document.getElementById('lightboxDescription');
+            const closeLightbox = document.getElementById('closeLightbox');
+            const lightboxPrev = document.getElementById('lightboxPrev');
+            const lightboxNext = document.getElementById('lightboxNext');
+
+            // Open lightbox when clicking on gallery item
+            galleryItems.forEach((item, index) => {
+                item.addEventListener('click', () => {
+                    currentImageIndex = index;
+                    openLightbox();
+                });
+            });
+
+            function openLightbox() {
+                const currentItem = galleryItems[currentImageIndex];
+                const src = currentItem.dataset.src;
+                const title = currentItem.dataset.title;
+                const description = currentItem.dataset.description;
+
+                lightboxImg.src = src;
+                lightboxTitle.textContent = title;
+                lightboxDescription.textContent = description;
+                lightbox.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightboxFunc() {
+                lightbox.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            function showPrevImage() {
+                currentImageIndex = (currentImageIndex - 1 + galleryItems.length) % galleryItems.length;
+                openLightbox();
+            }
+
+            function showNextImage() {
+                currentImageIndex = (currentImageIndex + 1) % galleryItems.length;
+                openLightbox();
+            }
+
+            // Event listeners
+            closeLightbox.addEventListener('click', closeLightboxFunc);
+            lightboxPrev.addEventListener('click', showPrevImage);
+            lightboxNext.addEventListener('click', showNextImage);
+
+            // Close lightbox when clicking outside the image
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    closeLightboxFunc();
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (lightbox.style.display === 'block') {
+                    switch(e.key) {
+                        case 'Escape':
+                            closeLightboxFunc();
+                            break;
+                        case 'ArrowLeft':
+                            showPrevImage();
+                            break;
+                        case 'ArrowRight':
+                            showNextImage();
+                            break;
+                    }
+                }
+            });
+        }
+
+        // Mobile Menu Toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('nav-links').classList.toggle('active');
+        });
+
+        // Close menu when clicking a link (mobile)
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('nav-links').classList.remove('active');
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    const navbarHeight = document.getElementById('navbar').offsetHeight;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
