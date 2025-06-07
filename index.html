@@ -223,11 +223,6 @@
             overflow: hidden;
         }
 
-        /* Mobile hero background as img element for better compatibility */
-        .hero-mobile-bg {
-            display: none;
-        }
-
         .hero::before {
             content: '';
             position: absolute;
@@ -239,25 +234,6 @@
                 radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
             animation: heroGradient 8s ease-in-out infinite;
-            z-index: 2;
-        }
-
-        .tips-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 30% 70%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 70% 30%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
-            z-index: 2;
-        }
-
-        .section-title {
-            position: relative;
-            z-index: 4;
         }
 
         @keyframes heroGradient {
@@ -904,49 +880,20 @@
         /* Mobile-specific fixes for background images */
         @media (max-width: 768px), (hover: none) and (pointer: coarse) {
             .hero {
-                background: linear-gradient(rgba(13, 13, 13, 0.5), rgba(13, 13, 13, 0.7)) !important;
                 background-attachment: scroll !important;
                 min-height: 100vh;
-                min-height: 100dvh; /* Dynamic viewport height for mobile */
-            }
-            
-            .hero-mobile-bg {
-                display: block !important;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                object-position: center;
-                z-index: 1;
-            }
-            
-            .hero-content {
-                position: relative;
-                z-index: 3;
+                background-size: cover !important;
+                background-position: center center !important;
+                /* Fallback for problematic devices */
+                background-color: #1a1a1a;
             }
             
             .tips-section {
-                background: linear-gradient(rgba(13, 13, 13, 0.8), rgba(13, 13, 13, 0.6)) !important;
                 background-attachment: scroll !important;
-            }
-            
-            .tips-mobile-bg {
-                display: block !important;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                object-position: center;
-                z-index: 1;
-            }
-            
-            .tips-container {
-                position: relative;
-                z-index: 3;
+                background-size: cover !important;
+                background-position: center center !important;
+                /* Fallback for problematic devices */
+                background-color: #1a1a1a;
             }
         }
 
@@ -954,9 +901,16 @@
         @media (max-width: 480px) {
             .hero {
                 min-height: 100vh;
-                min-height: 100dvh;
                 height: auto;
-                padding: 100px 0 60px;
+                padding: 80px 0 40px;
+                /* Ensure background is visible on very small screens */
+                background-image: 
+                    linear-gradient(rgba(13, 13, 13, 0.5), rgba(13, 13, 13, 0.7)), 
+                    url('https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g70e744eb98e231268baab9d6ef631e97efc330d99af61e317a2bdaea38b10e7c6c21a1c72674386f32ed4be244002b429768caed4c0888cf74fd5bbd9eeb13f6_1280.jpg') !important;
+                background-attachment: scroll !important;
+                background-size: cover !important;
+                background-position: center top !important;
+                background-repeat: no-repeat !important;
             }
             
             .hero-content {
@@ -965,32 +919,13 @@
                 z-index: 10;
             }
             
-            .hero-mobile-bg {
-                height: 120% !important; /* Ensure full coverage */
-                top: -10% !important;
-                width: 120% !important;
-                left: -10% !important;
+            /* Darker overlay for better text readability on mobile */
+            .hero::before {
+                background: 
+                    radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.15) 0%, transparent 50%),
+                    rgba(0, 0, 0, 0.3);
             }
-            
-            .tips-mobile-bg {
-                height: 110% !important;
-                width: 110% !important;
-                top: -5% !important;
-                left: -5% !important;
-            }
-        }
-
-        /* Ultra small screens */
-        @media (max-width: 320px) {
-            .hero-mobile-bg, .tips-mobile-bg {
-                min-height: 120vh !important;
-                min-width: 120vw !important;
-            }
-        }
-
-        /* Mobile hero background as img element for better compatibility */
-        .hero-mobile-bg, .tips-mobile-bg {
-            display: none;
         }
 
         .tips-section::before {
@@ -1697,12 +1632,6 @@
 
     <!-- Hero Section -->
     <section class="hero" id="home">
-        <!-- Mobile background image -->
-        <img class="hero-mobile-bg" 
-             src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g70e744eb98e231268baab9d6ef631e97efc330d99af61e317a2bdaea38b10e7c6c21a1c72674386f32ed4be244002b429768caed4c0888cf74fd5bbd9eeb13f6_1280.jpg" 
-             alt="Sri Lanka landscape"
-             loading="eager">
-        
         <div class="hero-content">
             <div class="hero-subtitle">नमस्ते • வணக்கம் • Ayubowan</div>
             <h1 class="hero-title">Podróż <span>Renatki</span><br>po Sri Lance</h1>
@@ -1978,12 +1907,6 @@
 
     <!-- Travel Tips Section -->
     <section class="tips-section" id="tips">
-        <!-- Mobile background image -->
-        <img class="tips-mobile-bg" 
-             src="https://public.youware.com/users-website-assets/prod/88ee5bb5-cf67-4c74-a20a-4b0c41490663/g9e9d99241177cfbbef368c493969fe9b7ad1bbad91f801b953af85d7fd3076ace0f518cc9655054d7ebce9f802f511f9df51818e87a2ef21f76e55e157fce85f_1280.jpg" 
-             alt="Sri Lanka beach"
-             loading="lazy">
-        
         <h2 class="section-title animate">Praktyczne Porady</h2>
         
         <div class="tips-container">
